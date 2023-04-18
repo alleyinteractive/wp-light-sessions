@@ -31,8 +31,8 @@ class Auth {
 	/**
 	 * Convert the current session to a Light Session.
 	 */
-	public function convert_session(): void {
-		$this->cookie->set();
+	public function convert_session( ?int $user_id = null ): void {
+		$this->cookie->set( $user_id );
 		$this->clear_core_cookies();
 		$this->redirect();
 	}
@@ -74,7 +74,7 @@ class Auth {
 	public function get_current_user() {
 		// First see if core has cookies for the current user.
 		$user = wp_get_current_user();
-		if ( $user instanceof WP_User ) {
+		if ( $user instanceof WP_User && ! empty( $user->ID ) ) {
 			return $user;
 		}
 

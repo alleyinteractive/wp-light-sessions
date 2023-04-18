@@ -21,7 +21,7 @@ add_action( 'wp_light_sessions_is_uncached_request', __NAMESPACE__ . '\set_reque
  * @param WP_User|null $user Filtered current user.
  * @return WP_User|null
  */
-function get_current_user( $user ): ?WP_User {
+function get_current_user( ?WP_User $user = null ): ?WP_User {
 	if ( $user ) {
 		return $user;
 	}

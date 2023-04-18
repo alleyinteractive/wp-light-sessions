@@ -39,10 +39,12 @@ class Light_Sessions {
 
 	/**
 	 * Lazily load the rest of the plugin and convert the session.
+	 *
+	 * @param int $user_id User ID whose session to set.
 	 */
-	public function do_convert_session(): void {
+	public function do_convert_session( int $user_id ): void {
 		$app = load();
-		$app['auth']->convert_session();
+		$app['auth']->convert_session( $user_id );
 	}
 
 	/**
@@ -86,7 +88,7 @@ class Light_Sessions {
 	public function maybe_intercept_set_logged_in_cookie( $logged_in_cookie, $expire, $expiration, $user_id ) {
 		// do_action( 'set_logged_in_cookie', $logged_in_cookie, $expire, $expiration, $user_id, 'logged_in', $token );
 		if ( true === apply_filters( 'wp_light_sessions_auth_as_light_session', false, $user_id ) ) {
-			$this->do_convert_session();
+			$this->do_convert_session( $user_id );
 		}
 	}
 }

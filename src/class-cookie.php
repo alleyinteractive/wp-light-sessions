@@ -125,8 +125,13 @@ class Cookie {
 	 *
 	 * @return bool
 	 */
-	public function set(): bool {
-		$user = wp_get_current_user();
+	public function set( ?int $user_id = null ): bool {
+		if ( $user_id ) {
+			$user = get_user_by( 'id', $user_id );
+		} else {
+			$user = wp_get_current_user();
+		}
+
 		if ( ! $user ) {
 			return false;
 		}
