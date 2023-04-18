@@ -24,7 +24,8 @@ This plugin aims to help developers thread the needle of safe full-page caching 
    2. Fire the action `wp_light_sessions_convert_session` and optionally include a parameter with a redirect url. Note
       that this action must be called before headers are sent.
    3. Make an authenticated request to `/convert-session/[nonce]`, where `[nonce]` is a valid nonce for this user.
-      Optionally add the query param `?redirect=[uri]` where `[uri]` is the URI on the site you want the user redirected
+      Optionally add the query param `?redirect_to=[uri]` where `[uri]` is the URI on the site you want the user
+      redirected
       back to. If no redirect is specified, the user will be redirected to the homepage.
 3. Before getting an authenticated user during a request, the request must first be declared as uncached. To do so, fire
    the action `wp_light_sessions_is_uncached_request` with a parameter of `true`. If the request is not explicitly
