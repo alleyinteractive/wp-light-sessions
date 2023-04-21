@@ -39,6 +39,7 @@
       <property name="prefixes" type="array">
         <element value="wpls" />
         <element value="wp_light_sessions" />
+        <element value="Alley\WP\Light_Sessions" />
       </property>
     </properties>
   </rule>

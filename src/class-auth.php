@@ -1,9 +1,15 @@
 <?php
 /**
  * Auth class
+ *
+ * @package wp-light-sessions
  */
 
 namespace Alley\WP\Light_Sessions;
+
+/* phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized */
+/* phpcs:disable WordPress.Security.NonceVerification.Recommended */
+/* phpcs:disable WordPressVIPMinimum.Functions.RestrictedFunctions.cookies_setcookie */
 
 use Alley\WP\Light_Sessions\Exceptions\Light_Sessions_Exception;
 use WP_User;
@@ -30,6 +36,8 @@ class Auth {
 
 	/**
 	 * Convert the current session to a Light Session.
+	 *
+	 * @param int|null $user_id Optional. ID of user whose session to convert.
 	 */
 	public function convert_session( ?int $user_id = null ): void {
 		$this->cookie->set( $user_id );
@@ -44,7 +52,7 @@ class Auth {
 		wp_clear_auth_cookie();
 
 		// Unset test cookie.
-		$secure = ( 'https' === parse_url( wp_login_url(), PHP_URL_SCHEME ) );
+		$secure = ( 'https' === wp_parse_url( wp_login_url(), PHP_URL_SCHEME ) );
 		setcookie( TEST_COOKIE, ' ', time() - YEAR_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN, $secure );
 
 		if ( SITECOOKIEPATH !== COOKIEPATH ) {
@@ -71,7 +79,7 @@ class Auth {
 	 *
 	 * @return WP_User|null
 	 */
-	public function get_current_user() {
+	public function get_current_user(): ?WP_User {
 		// First see if core has cookies for the current user.
 		$user = wp_get_current_user();
 		if ( $user instanceof WP_User && ! empty( $user->ID ) ) {
@@ -82,7 +90,7 @@ class Auth {
 		if ( ! Cache_Manager::is_uncached() ) {
 			_doing_it_wrong(
 				__METHOD__,
-				__( 'The request must be declared as uncached before accessing the current user.', 'wp_light_sessions' ),
+				esc_html__( 'The request must be declared as uncached before accessing the current user.', 'wp_light_sessions' ),
 				'0.1'
 			);
 

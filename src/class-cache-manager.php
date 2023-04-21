@@ -1,7 +1,15 @@
 <?php
+/**
+ * Cache_Manager class
+ *
+ * @package wp-light-sessions
+ */
 
 namespace Alley\WP\Light_Sessions;
 
+/**
+ * Cache state manager for the plugin.
+ */
 class Cache_Manager {
 	/**
 	 * Is the current request flagged as uncached?

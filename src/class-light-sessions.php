@@ -1,11 +1,22 @@
 <?php
+/**
+ * Light_Sessions class
+ *
+ * @package wp-light-sessions
+ */
 
+/* phpcs:disable WordPress.Security.ValidatedSanitizedInput.InputNotSanitized */
+/* phpcs:disable WordPress.Security.NonceVerification.Recommended */
 namespace Alley\WP\Light_Sessions;
 
-use JetBrains\PhpStorm\NoReturn;
-
+/**
+ * Main class for the plugin.
+ */
 class Light_Sessions {
-	public function boot() {
+	/**
+	 * Boot the plugin's functionality.
+	 */
+	public function boot(): void {
 		add_action( 'init', [ $this, 'register_route' ] );
 		add_filter( 'query_vars', [ $this, 'add_query_var' ] );
 		add_action( 'parse_query', [ $this, 'maybe_intercept_request' ] );
@@ -41,9 +52,9 @@ class Light_Sessions {
 	/**
 	 * Lazily load the rest of the plugin and convert the session.
 	 *
-	 * @param int $user_id User ID whose session to set.
+	 * @param int|null $user_id User ID whose session to set.
 	 */
-	public function do_convert_session( int $user_id ): void {
+	public function do_convert_session( ?int $user_id = null ): void {
 		$app = load();
 		$app['auth']->convert_session( $user_id );
 	}
@@ -55,7 +66,7 @@ class Light_Sessions {
 		if ( '1' === get_query_var( 'wpls_convert_session' ) ) {
 			// Check nonce.
 			if ( false === wp_verify_nonce( get_query_var( 'wpls_nonce' ), 'wpls_convert_session' ) ) {
-				wp_die( __( 'The request data timed out or is invalid.', 'wp_light_sessions' ) );
+				wp_die( esc_html__( 'The request data timed out or is invalid.', 'wp_light_sessions' ) );
 			}
 
 			$this->do_convert_session();
@@ -64,10 +75,12 @@ class Light_Sessions {
 
 	/**
 	 * Redirect to the convert session endpoint.
+	 *
+	 * @param string|null $redirect_to URL to which to redirect.
 	 */
 	public function redirect_to_convert_session( ?string $redirect_to = null ): void {
 		$nonce = wp_create_nonce( 'wpls_convert_session' );
-		$url = home_url( "/convert-session/{$nonce}/" );
+		$url   = home_url( "/convert-session/{$nonce}/" );
 		if ( ! empty( $redirect_to ) ) {
 			$url = add_query_arg( 'redirect_to', $redirect_to, $url );
 		} elseif ( ! empty( $_REQUEST['redirect_to'] ) && ! str_contains( $_REQUEST['redirect_to'], '/wp-admin/' ) ) {
@@ -89,7 +102,6 @@ class Light_Sessions {
 	 * @param int    $user_id          User ID.
 	 */
 	public function maybe_intercept_set_logged_in_cookie( $logged_in_cookie, $expire, $expiration, $user_id ) {
-		// do_action( 'set_logged_in_cookie', $logged_in_cookie, $expire, $expiration, $user_id, 'logged_in', $token );
 		if ( true === apply_filters( 'wp_light_sessions_auth_as_light_session', false, $user_id ) ) {
 			$this->do_convert_session( $user_id );
 		}

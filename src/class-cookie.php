@@ -1,6 +1,8 @@
 <?php
 /**
  * Cookie class
+ *
+ * @package wp-light-sessions
  */
 
 namespace Alley\WP\Light_Sessions;
@@ -47,7 +49,8 @@ class Cookie {
 	/**
 	 * Generate session data to store in a cookie.
 	 *
-	 * @param WP_User $user User for which to create a cookie.
+	 * @param WP_User $user       User for which to create a cookie.
+	 * @param int     $expiration Expiration of cookie as unix timestamp.
 	 * @return string Cookie value.
 	 */
 	public function generate( WP_User $user, int $expiration ): string {
@@ -123,6 +126,7 @@ class Cookie {
 	/**
 	 * Set a cookie with the user session.
 	 *
+	 * @param int|null $user_id ID of user whose cookie to set. If absent, uses current user.
 	 * @return bool
 	 */
 	public function set( ?int $user_id = null ): bool {
@@ -140,7 +144,7 @@ class Cookie {
 		$value      = $this->generate( $user, $expiration );
 
 		// Determine if the cookie should be secure, following the same logic core does.
-		$secure = is_ssl() && 'https' === parse_url( get_option( 'home' ), PHP_URL_SCHEME );
+		$secure = is_ssl() && 'https' === wp_parse_url( get_option( 'home' ), PHP_URL_SCHEME );
 
 		/**
 		 * Filters whether the light session cookie should only be sent over HTTPS.
@@ -150,18 +154,23 @@ class Cookie {
 		 */
 		$secure = apply_filters( 'wp_light_sessions_secure_cookie', $secure, $user->ID );
 
+		// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.cookies_setcookie
 		setcookie( self::$cookie_name, $value, $expiration, COOKIEPATH, COOKIE_DOMAIN, $secure, true );
 
 		return true;
 	}
 
 	/**
-	 * @throws Invalid_Cookie_Exception
-	 * @throws Invalid_Token_Exception
-	 * @throws Invalid_User_Exception
+	 * Authenticate the user using the light session cookie.
+	 *
+	 * @throws Invalid_Cookie_Exception If the cookie is in an invalid format.
+	 * @throws Invalid_User_Exception   If the user is invalid (e.g. was deleted).
+	 * @throws Invalid_Token_Exception  If the token fails verification.
+	 *
 	 * @return WP_User|null
 	 */
 	public function authenticate(): ?WP_User {
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE
 		$cookie_value = $_COOKIE[ self::$cookie_name ] ?? '';
 
 		return $this->verify_cookie_value( $cookie_value );

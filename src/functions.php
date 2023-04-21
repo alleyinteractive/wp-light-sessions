@@ -1,4 +1,9 @@
 <?php
+/**
+ * Assorted functions for the plugin
+ *
+ * @package wp-light-sessions
+ */
 
 namespace Alley\WP\Light_Sessions;
 

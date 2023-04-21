@@ -1,4 +1,9 @@
 <?php
+/**
+ * Test_Case class
+ *
+ * @package wp-light-sessions
+ */
 namespace Alley\WP\Light_Sessions\Tests;
 
 use Mantle\Testkit\Test_Case as TestkitTest_Case;

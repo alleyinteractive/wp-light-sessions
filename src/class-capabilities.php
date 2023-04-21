@@ -1,6 +1,8 @@
 <?php
 /**
  * Capabilities class
+ *
+ * @package wp-light-sessions
  */
 
 namespace Alley\WP\Light_Sessions;
@@ -12,11 +14,16 @@ use function Alley\WP\Light_Sessions\get_current_user as get_ls_user;
  * Class to manage capabilities handling with Light Sessions.
  */
 class Capabilities {
+	/**
+	 * Initialize the object.
+	 */
 	public function __construct() {
 		add_filter( 'user_has_cap', [ $this, 'filter_user_has_cap' ], 1, 4 );
 	}
 
 	/**
+	 * Get the capabilities that the plugin allows using.
+	 *
 	 * @return array WordPress capabilities.
 	 */
 	public function get_allowed_capabilities(): array {
@@ -44,14 +51,14 @@ class Capabilities {
 	 * @param WP_User  $user    The user object.
 	 * @return bool[] Filtered capabilities.
 	 */
-	public function filter_user_has_cap( $allcaps, $caps, $args, $user ) {
+	public function filter_user_has_cap( $allcaps, $caps, $args, $user ): array {
 		if ( ! empty( $user->ID ) ) {
-			 // If the user is already known, nothing additional needs to be done.
+			// If the user is already known, nothing additional needs to be done.
 			return $allcaps;
 		}
 
 		$allowed_caps = $this->get_allowed_capabilities();
-		$overlap = array_intersect( $caps, $allowed_caps );
+		$overlap      = array_intersect( $caps, $allowed_caps );
 
 		// If any of the allowed capabilities were checked, check for light session.
 		if ( ! empty( $overlap ) ) {
