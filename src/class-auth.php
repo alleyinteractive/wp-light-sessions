@@ -99,7 +99,7 @@ class Auth {
 			 *
 			 * @param Auth $auth This object.
 			 */
-			do_action( 'wp_light_sessions_authentication_error', $this );
+			do_action( 'wp_light_sessions_caching_error', $this );
 			return null;
 		}
 

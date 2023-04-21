@@ -28,18 +28,20 @@ This plugin aims to help developers thread the needle of safe full-page caching 
       redirected
       back to. If no redirect is specified, the user will be redirected to the homepage.
 3. Before getting an authenticated user during a request, the request must first be declared as uncached. To do so, fire
-   the action `wp_light_sessions_is_uncached_request` with a parameter of `true`. If the request is not explicitly
-   declared as uncached, the plugin will not get the user and will instead throw an
-   exception `Alley\WP\Light_Sessions\Cached_Request_Exception`.
+   the action `wp_light_sessions_is_uncached_request`. If the request is not explicitly
+   declared as uncached, the plugin will not get the user. The plugin will trigger a "doing it wrong" notice, as well as
+   fire the action `wp_light_sessions_caching_error`.
 4. To get the authenticated user during a request, call `apply_filters( 'wp_light_sessions_get_current_user', null );`.
    Alternatively, you may directly call the function `Alley\WP\Light_Sessions\get_current_user()`, though the filter
    approach is safer as it doesn't introduce a hard dependency between your code and this plugin, and will fail
-   silently. Either method will return a `WP_User` on success, `null` when there is no active session, or throw an
-   exception on failure.
+   silently. Either method will return a `WP_User` on success, or `null` when there is a failure or no active session.
+   In addition to `wp_light_sessions_caching_error`, the plugin could also
+   trigger `wp_light_sessions_authentication_error` if there was an authentication error. You could choose to throw an
+   exception in your code from these actions.
 5. To check capabilities for a user, this plugin provides a filtered allowlist (`wp_light_sessions_cap_allowlist`) of
    capabilities that can be checked against a user with a light session. By default, this only
    includes `use_light_sessions`. Note that if you call `current_user_can( 'use_light_sessions' )` (or another
-   capability on the allowlist), the request must be declared uncached per #3. Failing to do so will raise an exception.
+   capability on the allowlist), the request must be declared uncached per #3.
 
 ## Q & A
 
