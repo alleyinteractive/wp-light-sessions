@@ -66,6 +66,14 @@ class Capabilities {
 
 			// If there is a light session user, update allcaps for allowed capabilities.
 			if ( $ls_user instanceof WP_User ) {
+				/**
+				 * Filter the capabilities overlapping between what was checked and what is in the plugin's allowlist.
+				 *
+				 * @param string[]     $overlap Primitive capabilities.
+				 * @param WP_User      $ls_user User authenticated via a light session.
+				 * @param Capabilities $caps    This class.
+				 */
+				$overlap = apply_filters( 'wp_light_sessions_caps_for_user', $overlap, $ls_user, $this );
 				foreach ( $overlap as $cap ) {
 					$allcaps[ $cap ] = true;
 				}
