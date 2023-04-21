@@ -53,10 +53,15 @@ function main(): void {
  * }
  */
 function load(): array {
-	static $auth, $cookie;
+	static $auth, $caps, $cookie;
 
-	if ( ! $auth instanceof Auth || ! $cookie instanceof Cookie ) {
+	if (
+		! $auth instanceof Auth
+		|| ! $caps instanceof Capabilities
+		|| ! $cookie instanceof Cookie
+	) {
 		require_once __DIR__ . '/src/class-auth.php';
+		require_once __DIR__ . '/src/class-capabilities.php';
 		require_once __DIR__ . '/src/class-cookie.php';
 		require_once __DIR__ . '/src/class-cache-manager.php';
 		require_once __DIR__ . '/src/exceptions/class-light-sessions-exception.php';
@@ -66,10 +71,12 @@ function load(): array {
 
 		$cookie = new Cookie();
 		$auth   = new Auth( $cookie );
+		$caps   = new Capabilities();
 	}
 
 	return [
 		'auth'   => $auth,
+		'caps'   => $caps,
 		'cookie' => $cookie,
 	];
 }

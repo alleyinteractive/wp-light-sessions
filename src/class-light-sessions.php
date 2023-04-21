@@ -10,6 +10,7 @@ class Light_Sessions {
 		add_filter( 'query_vars', [ $this, 'add_query_var' ] );
 		add_action( 'parse_query', [ $this, 'maybe_intercept_request' ] );
 		add_action( 'set_logged_in_cookie', [ $this, 'maybe_intercept_set_logged_in_cookie' ], 10, 4 );
+		add_action( 'wp_light_sessions_convert_session', [ $this, 'redirect_to_convert_session' ] );
 	}
 
 	/**
@@ -64,10 +65,12 @@ class Light_Sessions {
 	/**
 	 * Redirect to the convert session endpoint.
 	 */
-	public function redirect_to_convert_session(): void {
+	public function redirect_to_convert_session( ?string $redirect_to = null ): void {
 		$nonce = wp_create_nonce( 'wpls_convert_session' );
 		$url = home_url( "/convert-session/{$nonce}/" );
-		if ( ! empty( $_REQUEST['redirect_to'] ) && ! str_contains( $_REQUEST['redirect_to'], '/wp-admin/' ) ) {
+		if ( ! empty( $redirect_to ) ) {
+			$url = add_query_arg( 'redirect_to', $redirect_to, $url );
+		} elseif ( ! empty( $_REQUEST['redirect_to'] ) && ! str_contains( $_REQUEST['redirect_to'], '/wp-admin/' ) ) {
 			$url = add_query_arg( 'redirect_to', $_REQUEST['redirect_to'], $url );
 		}
 
