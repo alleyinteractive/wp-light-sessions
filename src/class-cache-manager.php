@@ -12,26 +12,26 @@ namespace Alley\WP\Light_Sessions;
  */
 class Cache_Manager {
 	/**
-	 * Is the current request flagged as uncached?
+	 * Is the current request flagged as not cacheable?
 	 *
 	 * @var bool
 	 */
-	protected static bool $is_uncached = false;
+	protected static bool $is_not_cacheable = false;
 
 	/**
-	 * Explicitly set the current request as uncached.
+	 * Explicitly set the current request as not cacheable.
 	 */
-	public static function set_uncached(): void {
-		self::$is_uncached = true;
+	public static function set_not_cacheable(): void {
+		self::$is_not_cacheable = true;
 	}
 
 	/**
-	 * Was the current request explicitly flagged as uncached?
+	 * Was the current request explicitly flagged as not cacheable?
 	 *
 	 * @return bool True if the current request was explicitly flagged as
-	 *              uncached, false otherwise.
+	 *              not cacheable, false otherwise.
 	 */
-	public static function is_uncached(): bool {
-		return self::$is_uncached;
+	public static function is_not_cacheable(): bool {
+		return self::$is_not_cacheable;
 	}
 }

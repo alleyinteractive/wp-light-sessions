@@ -86,16 +86,16 @@ class Auth {
 			return $user;
 		}
 
-		// Ensure the current request is uncached.
-		if ( ! Cache_Manager::is_uncached() ) {
+		// Ensure the current request is not cacheable.
+		if ( ! Cache_Manager::is_not_cacheable() ) {
 			_doing_it_wrong(
 				__METHOD__,
-				esc_html__( 'The request must be declared as uncached before accessing the current user.', 'wp_light_sessions' ),
+				esc_html__( 'The request must be declared as not cacheable before accessing the current user.', 'wp_light_sessions' ),
 				'0.1'
 			);
 
 			/**
-			 * Fires if the user could not be accessed because the request wasn't declared as uncached.
+			 * Fires if the user could not be accessed because the request wasn't declared as not cacheable.
 			 *
 			 * @param Auth $auth This object.
 			 */

@@ -10,15 +10,15 @@ namespace Alley\WP\Light_Sessions;
 use WP_User;
 
 /**
- * Explicitly set the current request as uncached.
+ * Explicitly set the current request as not cacheable.
  */
-function set_request_as_uncached(): void {
+function set_request_as_not_cacheable(): void {
 	if ( ! class_exists( '\Alley\WP\Light_Sessions\Cache_Manager' ) ) {
 		load();
 	}
-	Cache_Manager::set_uncached();
+	Cache_Manager::set_not_cacheable();
 }
-add_action( 'wp_light_sessions_is_uncached_request', __NAMESPACE__ . '\set_request_as_uncached' );
+add_action( 'wp_light_sessions_request_is_not_cacheable', __NAMESPACE__ . '\set_request_as_not_cacheable' );
 
 /**
  * Get the current user, either through normal means or from the light session.
