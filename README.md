@@ -25,13 +25,10 @@ In essence, what this plugin provides is a mechanism to create a virtual "allowl
 
 ## Q & A
 
-> If a user is authenticated with a light session, can they access the WordPress
-> admin? What about authenticated REST
-> API endpoints?
+> If a user is authenticated with a light session, can they access the WordPress admin? What about authenticated REST API endpoints?
 
 No, when a session is converted from a full session to a light session, the WordPress cookies are destroyed and WordPress core believes the user is not authenticated. Only the allowed capabilities can be checked for the user. If a user has any capabilities that allow them to use the WordPress admin, protected REST API routes, etc., they will need to re-authenticate using the WordPress login.
 
-> Every page of my site has features that change based on whether the user is
-> signed in or not. Is this plugin for me?
+> Every page of my site has features that change based on whether the user is signed in or not. Is this plugin for me?
 
 No, at least not without refactoring your site. This plugin only benefits site where a _subset_ of requests requires or benefits from authentication, and the majority do not. One way to refactor a site to work this way is to load those features asynchronously using JavaScript. Then the main payload for the page can benefit from full-page caching and load more quickly, while the uncached request made via JavaScript can load customized content in asynchronously.
