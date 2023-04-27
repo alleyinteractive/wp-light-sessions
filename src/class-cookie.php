@@ -136,7 +136,7 @@ class Cookie {
 			$user = wp_get_current_user();
 		}
 
-		if ( ! $user ) {
+		if ( ! $user || ! $user->exists() ) {
 			return false;
 		}
 

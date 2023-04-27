@@ -57,13 +57,11 @@ function load(): array {
 
 	if (
 		! $auth instanceof Auth
-		|| ! $caps instanceof Capabilities
 		|| ! $cookie instanceof Cookie
 	) {
 		require_once __DIR__ . '/src/class-auth.php';
-		require_once __DIR__ . '/src/class-capabilities.php';
 		require_once __DIR__ . '/src/class-cookie.php';
-		require_once __DIR__ . '/src/class-cache-manager.php';
+		require_once __DIR__ . '/src/class-safety-supervisor.php';
 		require_once __DIR__ . '/src/exceptions/class-light-sessions-exception.php';
 		require_once __DIR__ . '/src/exceptions/class-invalid-cookie-exception.php';
 		require_once __DIR__ . '/src/exceptions/class-invalid-token-exception.php';
@@ -71,12 +69,10 @@ function load(): array {
 
 		$cookie = new Cookie();
 		$auth   = new Auth( $cookie );
-		$caps   = new Capabilities();
 	}
 
 	return [
 		'auth'   => $auth,
-		'caps'   => $caps,
 		'cookie' => $cookie,
 	];
 }

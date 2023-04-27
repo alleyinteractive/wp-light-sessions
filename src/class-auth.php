@@ -80,14 +80,13 @@ class Auth {
 	 * @return WP_User|null
 	 */
 	public function get_current_user(): ?WP_User {
-		// First see if core has cookies for the current user.
-		$user = wp_get_current_user();
-		if ( $user instanceof WP_User && ! empty( $user->ID ) ) {
-			return $user;
+		// First see if the current user is already authenticated.
+		if ( is_user_logged_in() ) {
+			return wp_get_current_user();
 		}
 
 		// Ensure the current request is not cacheable.
-		if ( ! Cache_Manager::is_not_cacheable() ) {
+		if ( ! Safety_Supervisor::is_not_cacheable() ) {
 			_doing_it_wrong(
 				__METHOD__,
 				esc_html__( 'The request must be declared as not cacheable before accessing the current user.', 'wp_light_sessions' ),

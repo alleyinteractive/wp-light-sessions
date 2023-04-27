@@ -9,19 +9,26 @@
 /* phpcs:disable WordPress.Security.NonceVerification.Recommended */
 namespace Alley\WP\Light_Sessions;
 
+use WP_User;
+
+use function Alley\WP\Light_Sessions\get_current_user as get_ls_user;
+
 /**
  * Main class for the plugin.
  */
 class Light_Sessions {
+	const NONCE_NAME = 'wpls_convert_session';
+
 	/**
 	 * Boot the plugin's functionality.
 	 */
 	public function boot(): void {
 		add_action( 'init', [ $this, 'register_route' ] );
 		add_filter( 'query_vars', [ $this, 'add_query_var' ] );
-		add_action( 'parse_query', [ $this, 'maybe_intercept_request' ] );
+		add_action( 'parse_request', [ $this, 'maybe_intercept_request' ] );
 		add_action( 'set_logged_in_cookie', [ $this, 'maybe_intercept_set_logged_in_cookie' ], 10, 4 );
 		add_action( 'wp_light_sessions_convert_session', [ $this, 'redirect_to_convert_session' ] );
+		add_action( 'wp_light_sessions_request_is_session_safe', [ $this, 'maybe_set_current_user' ] );
 	}
 
 	/**
@@ -62,10 +69,10 @@ class Light_Sessions {
 	/**
 	 * Check if the current request is to convert a session, and if so, run that process.
 	 */
-	public function maybe_intercept_request(): void {
-		if ( '1' === get_query_var( 'wpls_convert_session' ) ) {
+	public function maybe_intercept_request( $wp ): void {
+		if ( isset( $wp->query_vars['wpls_convert_session'], $wp->query_vars['wpls_nonce'] ) && '1' === $wp->query_vars['wpls_convert_session'] ) {
 			// Check nonce.
-			if ( false === wp_verify_nonce( get_query_var( 'wpls_nonce' ), 'wpls_convert_session' ) ) {
+			if ( false === wp_verify_nonce( $wp->query_vars['wpls_nonce'], self::NONCE_NAME ) ) {
 				wp_die( esc_html__( 'The request data timed out or is invalid.', 'wp_light_sessions' ) );
 			}
 
@@ -74,13 +81,21 @@ class Light_Sessions {
 	}
 
 	/**
+	 * Create a nonce for converting the session.
+	 *
+	 * @return string Nonce.
+	 */
+	public static function get_nonce(): string {
+		return wp_create_nonce( self::NONCE_NAME );
+	}
+
+	/**
 	 * Redirect to the convert session endpoint.
 	 *
 	 * @param string|null $redirect_to URL to which to redirect.
 	 */
 	public function redirect_to_convert_session( ?string $redirect_to = null ): void {
-		$nonce = wp_create_nonce( 'wpls_convert_session' );
-		$url   = home_url( "/convert-session/{$nonce}/" );
+		$url   = home_url( "/convert-session/{$this->get_nonce()}/" );
 		if ( ! empty( $redirect_to ) ) {
 			$url = add_query_arg( 'redirect_to', $redirect_to, $url );
 		} elseif ( ! empty( $_REQUEST['redirect_to'] ) && ! str_contains( $_REQUEST['redirect_to'], '/wp-admin/' ) ) {
@@ -102,8 +117,33 @@ class Light_Sessions {
 	 * @param int    $user_id          User ID.
 	 */
 	public function maybe_intercept_set_logged_in_cookie( $logged_in_cookie, $expire, $expiration, $user_id ) {
-		if ( true === apply_filters( 'wp_light_sessions_auth_as_light_session', false, $user_id ) ) {
+		/**
+		 * Filter whether the user's session should be converted to a light session vs core WordPress session.
+		 *
+		 * If the filter returns true, the session will be immediately converted.
+		 *
+		 * @param bool $do_convert True if yes, false if no.
+		 * @param int  $user_id    User ID.
+		 */
+		if ( true === apply_filters( 'wp_light_sessions_convert_to_light_session', false, $user_id ) ) {
 			$this->do_convert_session( $user_id );
+		}
+	}
+
+	/**
+	 * Set the current global user from the light session user.
+	 *
+	 * @return void
+	 */
+	public function maybe_set_current_user(): void {
+		// If the current user is already set, no additional work needs to be done.
+		if ( is_user_logged_in() ) {
+			return;
+		}
+
+		$ls_user = get_ls_user();
+		if ( $ls_user ) {
+			wp_set_current_user( $ls_user->ID );
 		}
 	}
 }

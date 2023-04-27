@@ -10,7 +10,7 @@ namespace Alley\WP\Light_Sessions;
 /**
  * Cache state manager for the plugin.
  */
-class Cache_Manager {
+class Safety_Supervisor {
 	/**
 	 * Is the current request flagged as not cacheable?
 	 *
