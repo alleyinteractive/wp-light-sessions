@@ -18,20 +18,15 @@ use WP_User;
  * Class to manage the Auth session process.
  */
 class Auth {
-	/**
-	 * Cookie object.
-	 *
-	 * @var Cookie
-	 */
-	protected Cookie $cookie;
 
 	/**
 	 * Instantiate the class with the Cookie object.
 	 *
 	 * @param Cookie $cookie Cookie object.
 	 */
-	public function __construct( Cookie $cookie ) {
-		$this->cookie = $cookie;
+	public function __construct(
+		protected Cookie $cookie
+	) {
 	}
 
 	/**
