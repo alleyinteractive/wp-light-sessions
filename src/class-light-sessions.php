@@ -78,6 +78,8 @@ class Light_Sessions {
 
 	/**
 	 * Check if the current request is to convert a session, and if so, run that process.
+	 *
+	 * @param \WP $wp WP Instance.
 	 */
 	public function maybe_intercept_request( $wp ): void {
 		if ( isset( $wp->query_vars['wpls_convert_session'], $wp->query_vars['wpls_nonce'] ) && '1' === $wp->query_vars['wpls_convert_session'] ) {
@@ -105,7 +107,7 @@ class Light_Sessions {
 	 * @param string|null $redirect_to URL to which to redirect.
 	 */
 	public function redirect_to_convert_session( ?string $redirect_to = null ): void {
-		$url   = home_url( "/convert-session/{$this->get_nonce()}/" );
+		$url = home_url( "/convert-session/{$this->get_nonce()}/" );
 		if ( ! empty( $redirect_to ) ) {
 			$url = add_query_arg( 'redirect_to', $redirect_to, $url );
 		} elseif ( ! empty( $_REQUEST['redirect_to'] ) && ! str_contains( $_REQUEST['redirect_to'], '/wp-admin/' ) ) {

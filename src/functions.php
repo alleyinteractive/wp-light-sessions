@@ -29,7 +29,7 @@ function set_request_as_not_cacheable(): bool {
 	if ( headers_sent() ) {
 		_doing_it_wrong(
 			__FUNCTION__,
-			__( 'Headers already sent, cannot set request to be not cacheable', 'wp-light-sessions' ),
+			esc_html__( 'Headers already sent, cannot set request to be not cacheable', 'wp-light-sessions' ),
 			'0.1'
 		);
 		return false;
