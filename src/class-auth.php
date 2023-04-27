@@ -70,7 +70,7 @@ class Auth {
 			$redirect_to = home_url();
 		}
 
-		wp_safe_redirect( $redirect_to );
+		wp_safe_redirect( esc_url_raw( $redirect_to ) );
 		exit;
 	}
 
