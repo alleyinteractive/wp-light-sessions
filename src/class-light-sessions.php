@@ -102,7 +102,7 @@ class Light_Sessions {
 			$url = add_query_arg( 'redirect_to', $_REQUEST['redirect_to'], $url );
 		}
 
-		wp_safe_redirect( $url );
+		wp_safe_redirect( esc_url_raw( $url ) );
 		exit;
 	}
 
