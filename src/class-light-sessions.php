@@ -9,8 +9,6 @@
 /* phpcs:disable WordPress.Security.NonceVerification.Recommended */
 namespace Alley\WP\Light_Sessions;
 
-use WP_User;
-
 use function Alley\WP\Light_Sessions\get_current_user as get_ls_user;
 
 /**
@@ -29,6 +27,7 @@ class Light_Sessions {
 		add_action( 'set_logged_in_cookie', [ $this, 'maybe_intercept_set_logged_in_cookie' ], 10, 4 );
 		add_action( 'wp_light_sessions_convert_session', [ $this, 'redirect_to_convert_session' ] );
 		add_action( 'wp_light_sessions_request_is_session_safe', [ $this, 'maybe_set_current_user' ] );
+		add_action( 'wp_logout', [ $this, 'clear_session' ] );
 	}
 
 	/**
@@ -55,7 +54,6 @@ class Light_Sessions {
 		return $qv;
 	}
 
-
 	/**
 	 * Lazily load the rest of the plugin and convert the session.
 	 *
@@ -64,6 +62,18 @@ class Light_Sessions {
 	public function do_convert_session( ?int $user_id = null ): void {
 		$app = load();
 		$app['auth']->convert_session( $user_id );
+	}
+
+	/**
+	 * Clear the user's light session.
+	 *
+	 * @param int $user_id User ID whose session to clear.
+	 */
+	public function clear_session( $user_id ): void {
+		if ( isset( $_COOKIE[ COOKIE_NAME ] ) ) {
+			$app = load();
+			$app['auth']->clear_light_session_cookie( $user_id );
+		}
 	}
 
 	/**
@@ -127,6 +137,9 @@ class Light_Sessions {
 		 */
 		if ( true === apply_filters( 'wp_light_sessions_convert_to_light_session', false, $user_id ) ) {
 			$this->do_convert_session( $user_id );
+		} else {
+			// Ensure no light session persists.
+			$this->clear_session( $user_id );
 		}
 	}
 

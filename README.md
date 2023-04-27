@@ -30,11 +30,13 @@ This plugin is fully opt-in. Out-of-the-box, it changes nothing and has zero imp
 
 > If a user is authenticated with a light session, can they access the WordPress admin? What about authenticated REST API endpoints?
 
-When a session is converted from a full session to a light session, the WordPress cookies are destroyed and WordPress core believes the user is not authenticated. Only the allowed capabilities can be checked for the user. If a user has any capabilities that allow them to use the WordPress admin, protected REST API routes, etc., they will need to re-authenticate using the WordPress login.
+When a session is converted from a full session to a light session, the WordPress cookies are destroyed, including the cookie that the WordPress admin uses to authenticate users. A user would need to sign back in to access the WordPress admin area.
+
+Protected WordPress routes can be accessible to a user authenticated using light sessions, as long as that request has been marked as uncacheable and flagged as safe to use light sessions.
 
 > Every page of my site has features that change based on whether the user is signed in or not. Is this plugin for me?
 
-No, at least not without refactoring your site. This plugin only benefits site where a _subset_ of requests requires or benefits from authentication, and the majority do not. One way to refactor a site to work this way is to load those features asynchronously using JavaScript. Then the main payload for the page can benefit from full-page caching and load more quickly, while the uncached request made via JavaScript can load customized content in asynchronously.
+No, at least not without refactoring your site. This plugin only benefits site where a _subset_ of URLs requires or benefits from authentication, and the majority do not. One way to refactor a site to work this way is to load those features asynchronously using JavaScript. Then the main payload for the page can benefit from full-page caching and load more quickly, while the uncached request made via JavaScript can load customized content in asynchronously.
 
 > Can I allow a URL to be cacheable to anonymous visitors and uncacheable for signed-in users?
 

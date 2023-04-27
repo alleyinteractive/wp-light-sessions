@@ -19,13 +19,6 @@ use WP_User;
  */
 class Cookie {
 	/**
-	 * Cookie name.
-	 *
-	 * @var string
-	 */
-	public static string $cookie_name = 'wpls_logged_in';
-
-	/**
 	 * Cookie scheme.
 	 *
 	 * @var string
@@ -142,20 +135,10 @@ class Cookie {
 
 		$expiration = $this->get_expiration();
 		$value      = $this->generate( $user, $expiration );
-
-		// Determine if the cookie should be secure, following the same logic core does.
-		$secure = is_ssl() && 'https' === wp_parse_url( get_option( 'home' ), PHP_URL_SCHEME );
-
-		/**
-		 * Filters whether the light session cookie should only be sent over HTTPS.
-		 *
-		 * @param bool $secure  Whether the cookie should only be sent over HTTPS.
-		 * @param int  $user_id User ID.
-		 */
-		$secure = apply_filters( 'wp_light_sessions_secure_cookie', $secure, $user->ID );
+		$secure     = $this->is_secure( $user->ID );
 
 		// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.cookies_setcookie
-		setcookie( self::$cookie_name, $value, $expiration, COOKIEPATH, COOKIE_DOMAIN, $secure, true );
+		setcookie( COOKIE_NAME, $value, $expiration, COOKIEPATH, COOKIE_DOMAIN, $secure, true );
 
 		return true;
 	}
@@ -171,8 +154,29 @@ class Cookie {
 	 */
 	public function authenticate(): ?WP_User {
 		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPressVIPMinimum.Variables.RestrictedVariables.cache_constraints___COOKIE
-		$cookie_value = $_COOKIE[ self::$cookie_name ] ?? '';
+		$cookie_value = $_COOKIE[ COOKIE_NAME ] ?? '';
 
 		return $this->verify_cookie_value( $cookie_value );
+	}
+
+	/**
+	 * Should the cookie be set as secure or not?
+	 *
+	 * @param int $user_id User ID.
+	 * @return bool True if yes, false if no.
+	 */
+	public static function is_secure( int $user_id ): bool {
+		// Determine if the cookie should be secure, following the same logic core does.
+		$secure = is_ssl() && 'https' === wp_parse_url( get_option( 'home' ), PHP_URL_SCHEME );
+
+		/**
+		 * Filters whether the light session cookie should only be sent over HTTPS.
+		 *
+		 * @param bool $secure  Whether the cookie should only be sent over HTTPS.
+		 * @param int  $user_id User ID.
+		 */
+		$secure = apply_filters( 'wp_light_sessions_secure_cookie', $secure, $user_id );
+
+		return (bool) $secure;
 	}
 }

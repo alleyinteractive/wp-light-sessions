@@ -56,6 +56,16 @@ class Auth {
 	}
 
 	/**
+	 * Clear the light session cookie.
+	 *
+	 * @param int $user_id User ID.
+	 */
+	public function clear_light_session_cookie( int $user_id ): void {
+		$secure = Cookie::is_secure( $user_id );
+		setcookie( COOKIE_NAME, ' ', time() - YEAR_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN, $secure );
+	}
+
+	/**
 	 * Redirect the request to the redirect_to request param or the homepage.
 	 */
 	public function redirect(): void {
