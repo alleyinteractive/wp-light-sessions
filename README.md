@@ -39,10 +39,3 @@ No, at least not without refactoring your site. This plugin only benefits site w
 > Can I allow a URL to be cacheable to anonymous visitors and uncacheable for signed-in users?
 
 Not without some custom development or edge cache configuration. Theoretically you could configure your edge cache to segment requests into "has a `wpls_logged_in` cookie" vs "doesn't have a `wpls_logged_in` cookie" and then anonymous users could get a cached response to that URL while users with the cookie would always get an uncached response.
-
->
-TODO:
-- [x] split is_not_cacheable action
-- [x] replace admin
-- [ ] test REST
-- [ ] test admin
