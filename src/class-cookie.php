@@ -140,6 +140,17 @@ class Cookie {
 		// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.cookies_setcookie
 		setcookie( COOKIE_NAME, $value, $expiration, COOKIEPATH, COOKIE_DOMAIN, $secure, true );
 
+		// Set a basic cookie that JS can access.
+		// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.cookies_setcookie
+		setcookie( JS_COOKIE_NAME, '1', $expiration, COOKIEPATH, COOKIE_DOMAIN, $secure );
+
+		/**
+		 * Indicate that the cookies were set.
+		 *
+		 * @param WP_User $user Current user.
+		 */
+		do_action( 'wp_light_sessions_set_cookies_for_user', $user );
+
 		return true;
 	}
 

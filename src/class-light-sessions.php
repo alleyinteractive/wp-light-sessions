@@ -9,6 +9,8 @@
 /* phpcs:disable WordPress.Security.NonceVerification.Recommended */
 namespace Alley\WP\Light_Sessions;
 
+use WP_User;
+
 use function Alley\WP\Light_Sessions\get_current_user as get_ls_user;
 
 /**
@@ -72,7 +74,7 @@ class Light_Sessions {
 	public function clear_session( $user_id ): void {
 		if ( isset( $_COOKIE[ COOKIE_NAME ] ) ) {
 			$app = load();
-			$app['auth']->clear_light_session_cookie( $user_id );
+			$app['auth']->clear_light_session_cookies( $user_id );
 		}
 	}
 
@@ -158,6 +160,12 @@ class Light_Sessions {
 
 		$ls_user = get_ls_user();
 		if ( $ls_user ) {
+			/**
+			 * Indicate that the global current user is about to be set.
+			 *
+			 * @param WP_User $ls_user Light session user.
+			 */
+			do_action( 'wp_light_sessions_set_current_user', $ls_user );
 			wp_set_current_user( $ls_user->ID );
 		}
 	}

@@ -21,7 +21,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-const COOKIE_NAME = 'wpls_logged_in';
+const COOKIE_NAME    = 'wpls_logged_in';
+const JS_COOKIE_NAME = 'wpls_is_user_logged_in';
 
 // Load the plugin's main files.
 require_once __DIR__ . '/src/class-light-sessions.php';
