@@ -3,7 +3,7 @@
  * Plugin Name: WP Light Sessions
  * Plugin URI: https://github.com/alleyinteractive/wp-light-sessions
  * Description: Lightweight, cache-flexible user sessions for WordPress
- * Version: 0.1.0
+ * Version: 0.2.0
  * Author: Matthew Boynes
  * Author URI: https://alley.com/
  * Requires at least: 6.0
