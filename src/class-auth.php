@@ -60,9 +60,10 @@ class Auth {
 	 *
 	 * @param int $user_id User ID.
 	 */
-	public function clear_light_session_cookie( int $user_id ): void {
+	public function clear_light_session_cookies( int $user_id ): void {
 		$secure = Cookie::is_secure( $user_id );
 		setcookie( COOKIE_NAME, ' ', time() - YEAR_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN, $secure );
+		setcookie( JS_COOKIE_NAME, ' ', time() - YEAR_IN_SECONDS, COOKIEPATH, COOKIE_DOMAIN, $secure );
 	}
 
 	/**
@@ -74,6 +75,13 @@ class Auth {
 		} else {
 			$redirect_to = home_url();
 		}
+
+		/**
+		 * Filters the redirect URL.
+		 *
+		 * @param string $redirect_to Redirect URL.
+		 */
+		$redirect_to = apply_filters( 'wp_light_sessions_auth_redirect', $redirect_to );
 
 		wp_safe_redirect( esc_url_raw( $redirect_to ) );
 		exit;
