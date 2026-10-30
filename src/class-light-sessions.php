@@ -49,7 +49,8 @@ class Light_Sessions {
 	 * @param array $qv The current query vars.
 	 * @return array The modified query vars.
 	 */
-	public function add_query_var( array $qv ): array {
+	public function add_query_var( $qv ): array {
+		$qv   = (array) $qv;
 		$qv[] = 'wpls_convert_session';
 		$qv[] = 'wpls_nonce';
 
